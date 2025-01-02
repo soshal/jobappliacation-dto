@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # PostgreSQL service
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: jobservice
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  # pgAdmin service
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"  # Expose pgAdmin web interface on port 5050
+    networks:
+      - microservices-network
+
+  # Job Service
+  job-service:
+    build:
+      context: ./job-service
+    container_name: job-service
+    depends_on:
+      - postgres
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jobservice
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password
+    networks:
+      - microservices-network
+
+  # Review Service
+  review-service:
+    build:
+      context: ./review-service
+    container_name: review-service
+    depends_on:
+      - postgres
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/reviewservice
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password
+    networks:
+      - microservices-network
+
+  # Company Service
+  company-service:
+    build:
+      context: ./company-service
+    container_name: company-service
+    depends_on:
+      - postgres
+    ports:
+      - "8083:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/companyservice
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password
+    networks:
+      - microservices-network
+
+volumes:
+  postgres-data:
+
+networks:
+  microservices-network:
+    driver: bridge
