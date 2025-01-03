@@ -12,12 +12,15 @@ import java.util.Optional;
 public class JobService {
 
     private final JobRepository jobRepository;
-    private final RestTemplate restTemplate;
+    private  final  CompanyClient companyClient;
+
+
 
     @Autowired
-    public JobService(JobRepository jobRepository, RestTemplate restTemplate) {
+    public JobService(JobRepository jobRepository, RestTemplate restTemplate, CompanyClient companyClient) {
         this.jobRepository = jobRepository;
-        this.restTemplate = restTemplate;
+        this.companyClient = companyClient;
+
     }
 
     public List<Job> getAllJobs() {
@@ -45,17 +48,12 @@ public class JobService {
         jobRepository.deleteById(id);
     }
 
-    // Fetch the company details from the external service using RestTemplate
-    public Company getCompanyDetails(Long companyId) {
-        return restTemplate.getForObject("http://companyservice/companies/" + companyId, Company.class);
-    }
-
     // Method to get JobDTO with Company information
     public JobDTO getJobWithCompany(Long jobId) {
         Optional<Job> job = jobRepository.findById(jobId);
         if (job.isPresent()) {
             Job jobEntity = job.get();
-            Company company = getCompanyDetails(jobEntity.getCompany()); // Fetch company details using companyId
+            Company company = companyClient.getCompanyDetails(jobEntity.getCompany()); // Fetch company details using Feign
             return JobMapper.toJobDTO(jobEntity, company); // Map Job to JobDTO
         }
         throw new RuntimeException("Job not found with id " + jobId);
