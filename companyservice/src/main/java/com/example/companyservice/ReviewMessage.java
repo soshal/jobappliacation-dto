@@ -1,24 +1,8 @@
-package com.example.reviewservice;
+package com.example.companyservice;
 
-
-
-import jakarta.persistence.*;
-
-@Entity
-public class Review {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ReviewMessage {
     private Long id;
-
     private String title;
-    private Integer rating; // Rating scale, e.g., 1-5
-
-
-    private Long companyId;
-
-
-    private Long jobId;
     private String description;
 
     public Long getId() {
@@ -29,7 +13,13 @@ public class Review {
         this.id = id;
     }
 
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Integer getRating() {
         return rating;
@@ -47,13 +37,8 @@ public class Review {
         this.companyId = companyId;
     }
 
-    public Long getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(Long jobId) {
-        this.jobId = jobId;
-    }
+    private Integer rating;
+    private Long companyId;
 
     public String getTitle() {
         return title;
@@ -63,11 +48,5 @@ public class Review {
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    // Getters and setters...
 }
