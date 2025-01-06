@@ -1,14 +1,17 @@
 package com.example.jobservice;
 
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+
 public class JobService {
 
     private final JobRepository jobRepository;
@@ -23,8 +26,22 @@ public class JobService {
 
     }
 
+
+    @CircuitBreaker(name = "companyBreaker",fallbackMethod = "getAllJobsFallback")
     public List<Job> getAllJobs() {
         return jobRepository.findAll();
+    }
+
+
+    public List<String> getAllJobsFallback(Exception e){
+
+        List<String> n = new ArrayList<>();
+
+        n.add("dummy");
+
+
+        return  n;
+
     }
 
     public Optional<Job> getJobById(Long id) {
